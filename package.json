@@ -1,5 +1,6 @@
 {
   "name": "messmealcalculator",
+  "homepage": "https://roy-sumon.github.io/mess-meal-manager-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,10 +8,13 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@fontsource/poppins": "^5.1.0",
+    "gh-pages": "^6.2.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
     "react": "^18.3.1",
