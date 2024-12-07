@@ -57,7 +57,7 @@ const SinglePerson = ({ setAddMember }) => {
   //const totalAmount = members.reduce((sum, member) => sum + member.individualAmount, 0);
 
   return (
-    <div className="w-[80%] mt-12 sm:w-[50%] bg-red-200 p-1 sm:p-4 mx-auto rounded-sm">
+    <div className="w-[98%] mt-12 sm:w-[50%] bg-red-200 p-1 sm:p-4 mx-auto rounded-sm">
       <form onSubmit={handleSubmit}>
         <h1 className="text-center text-lg sm:text-xl font-semibold">Mess Meal Manager App</h1>
         
