@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Settings, ShoppingBag, Building2, Calendar } from 'lucide-react';
 import { formatCurrency } from '../utils/calculator';
+import { useLanguage } from '../context/useLanguage';
 
 const ExpenseConfigModal = ({ 
   isOpen, 
@@ -9,6 +10,7 @@ const ExpenseConfigModal = ({
   onSaveConfig, 
   totalDeposit 
 }) => {
+  const { t } = useLanguage();
   const [messName, setMessName] = useState('');
   const [monthYear, setMonthYear] = useState('');
   const [useBazarCost, setUseBazarCost] = useState(false);
@@ -62,7 +64,7 @@ const ExpenseConfigModal = ({
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
-          title="বন্ধ করুন (Esc)"
+          title="Esc"
         >
           <X className="w-5 h-5" />
         </button>
@@ -73,8 +75,8 @@ const ExpenseConfigModal = ({
             <Settings className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-white">মেস সেটিংস ও বাজার খরচ</h2>
-            <p className="text-xs text-slate-400">মেসের নাম, মাস এবং মিল রেট গণনার পদ্ধতি নির্ধারণ করুন</p>
+            <h2 className="text-base sm:text-lg font-bold text-white">{t.configModalTitle}</h2>
+            <p className="text-xs text-slate-400">{t.configModalSub}</p>
           </div>
         </div>
 
@@ -83,7 +85,7 @@ const ExpenseConfigModal = ({
           {/* Mess Name */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-              মেসের নাম (Mess Name)
+              {t.labelMessName}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -93,7 +95,7 @@ const ExpenseConfigModal = ({
                 type="text"
                 value={messName}
                 onChange={(e) => setMessName(e.target.value)}
-                placeholder="যেমন: ধানমন্ডি মেস বা Sunflower Hostel"
+                placeholder={t.placeholderMessName}
                 className="w-full rounded-xl bg-slate-800/80 border border-slate-700 pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
               />
             </div>
@@ -102,7 +104,7 @@ const ExpenseConfigModal = ({
           {/* Month / Period */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-              মাস ও বছর (Month / Period)
+              {t.labelMonthYear}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -112,7 +114,7 @@ const ExpenseConfigModal = ({
                 type="text"
                 value={monthYear}
                 onChange={(e) => setMonthYear(e.target.value)}
-                placeholder="যেমন: সেপ্টেম্বর ২০২৬ বা September 2026"
+                placeholder={t.placeholderMonthYear}
                 className="w-full rounded-xl bg-slate-800/80 border border-slate-700 pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
               />
             </div>
@@ -122,9 +124,9 @@ const ExpenseConfigModal = ({
           <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
             <div className="flex items-center justify-between">
               <div className="pr-4">
-                <span className="text-sm font-semibold text-white block">আলাদা বাজার খরচ যুক্ত করবেন?</span>
+                <span className="text-sm font-semibold text-white block">{t.toggleBazarQuestion}</span>
                 <span className="text-xs text-slate-400">
-                  চালু করলে মেসের মোট বাজার খরচ অনুযায়ী মিল রেট নির্ধারিত হবে।
+                  {t.toggleBazarSub}
                 </span>
               </div>
               <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
@@ -142,7 +144,7 @@ const ExpenseConfigModal = ({
             {useBazarCost && (
               <div className="pt-2 border-t border-slate-800/80 space-y-2">
                 <label className="block text-xs font-semibold text-indigo-300 uppercase tracking-wider">
-                  প্রকৃত মোট বাজার খরচ (Total Bazar Cost - ৳)
+                  {t.labelBazarCost}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-indigo-400">
@@ -154,16 +156,16 @@ const ExpenseConfigModal = ({
                     min="0"
                     value={customBazarCost}
                     onChange={(e) => setCustomBazarCost(e.target.value)}
-                    placeholder="যেমন: ১৫০০০"
+                    placeholder={t.placeholderBazarCost}
                     className="w-full rounded-xl bg-slate-800 border border-indigo-500/50 pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
 
                 {/* Leftover Fund / Deficit calculation */}
                 <div className="text-xs p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between">
-                  <span className="text-slate-400">সদস্যদের মোট জমা: {formatCurrency(totalDeposit)}</span>
+                  <span className="text-slate-400">{t.totalDepositsLabel} {formatCurrency(totalDeposit)}</span>
                   <span className={leftover >= 0 ? "text-emerald-400 font-semibold" : "text-rose-400 font-semibold"}>
-                    {leftover >= 0 ? `ম্যানেজারের হাতে উদ্বৃত্ত: ${formatCurrency(leftover)}` : `ঘাটতি: ${formatCurrency(Math.abs(leftover))}`}
+                    {leftover >= 0 ? t.managerLeftover(formatCurrency(leftover)) : t.managerDeficit(formatCurrency(Math.abs(leftover)))}
                   </span>
                 </div>
               </div>
@@ -177,13 +179,13 @@ const ExpenseConfigModal = ({
               onClick={onClose}
               className="px-4 py-2 text-sm font-medium rounded-xl text-slate-300 hover:bg-slate-800 transition-colors"
             >
-              বাতিল
+              {t.btnCancel}
             </button>
             <button
               type="submit"
               className="px-5 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/25 transition-all active:scale-95"
             >
-              সেটিংস সেভ করুন
+              {t.btnSaveSettings}
             </button>
           </div>
 

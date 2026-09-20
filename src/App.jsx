@@ -17,10 +17,13 @@ import {
   DEFAULT_CONFIG,
   clearAllData
 } from './utils/storage';
+import { LanguageProvider } from './context/LanguageContext';
+import { useLanguage } from './context/useLanguage';
 
 import { CheckCircle2, Heart } from 'lucide-react';
 
-function App() {
+function AppContent() {
+  const { t } = useLanguage();
   const [members, setMembers] = useState(() => loadStoredMembers());
   const [config, setConfig] = useState(() => loadStoredConfig());
 
@@ -72,7 +75,7 @@ function App() {
       setMembers((prev) =>
         prev.map((m) => (m.id === memberData.id ? { ...m, ...memberData } : m))
       );
-      showToast(`সদস্য "${memberData.name}" এর তথ্য আপডেট করা হয়েছে!`);
+      showToast(t.toastMemberUpdated(memberData.name));
     } else {
       // Add new
       const newMember = {
@@ -80,37 +83,37 @@ function App() {
         id: String(Date.now()),
       };
       setMembers((prev) => [...prev, newMember]);
-      showToast(`নতুন সদস্য "${memberData.name}" যোগ করা হয়েছে!`);
+      showToast(t.toastMemberAdded(memberData.name));
     }
   };
 
   const handleDeleteMember = (id, name) => {
-    const confirmed = window.confirm(`আপনি কি নিশ্চিত যে "${name}" কে তালিকা থেকে মুছে ফেলতে চান?`);
+    const confirmed = window.confirm(t.confirmDelete(name));
     if (confirmed) {
       setMembers((prev) => prev.filter((m) => m.id !== id));
-      showToast(`"${name}" কে তালিকা থেকে মুছে ফেলা হয়েছে!`);
+      showToast(t.toastMemberDeleted(name));
     }
   };
 
   const handleResetData = () => {
-    const confirmed = window.confirm('সতর্কতা: আপনি কি মেসের সব মেম্বার ও ডাটা রিসেট করতে চান?');
+    const confirmed = window.confirm(t.confirmReset);
     if (confirmed) {
       clearAllData();
       setMembers([]);
       setConfig(DEFAULT_CONFIG);
-      showToast('সব ডাটা মুছে ফেলা হয়েছে!');
+      showToast(t.toastAllReset);
     }
   };
 
   const handleLoadDemo = () => {
     setMembers(DEMO_MEMBERS);
     setConfig(DEFAULT_CONFIG);
-    showToast('ডেমো মেম্বার ডাটা সফলভাবে লোড হয়েছে!');
+    showToast(t.toastDemoLoaded);
   };
 
   const handleSaveConfig = (newConfig) => {
     setConfig(newConfig);
-    showToast('মেস সেটিংস ও বাজার খরচ সেভ হয়েছে!');
+    showToast(t.toastConfigSaved);
   };
 
   return (
@@ -164,10 +167,10 @@ function App() {
           <div className="flex items-center gap-2">
             <span className="font-semibold text-slate-300">Mess Meal Manager App</span>
             <span>•</span>
-            <span>স্মার্ট, দ্রুত ও নির্ভুল মেস মিল হিসাব</span>
+            <span>{t.footerSub}</span>
           </div>
           <div className="flex items-center gap-1">
-            <span>Crafted with</span>
+            <span>{t.footerCraftedWith}</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
             <span>by</span>
             <a 
@@ -219,6 +222,14 @@ function App() {
       />
 
     </div>
+  );
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }
 

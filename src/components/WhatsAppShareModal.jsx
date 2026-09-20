@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Copy, Check, Share2, MessageCircle } from 'lucide-react';
 import { formatCurrency } from '../utils/calculator';
+import { useLanguage } from '../context/useLanguage';
 
 const WhatsAppShareModal = ({ 
   isOpen, 
@@ -9,6 +10,7 @@ const WhatsAppShareModal = ({
   metrics, 
   members = [] 
 }) => {
+  const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -23,35 +25,35 @@ const WhatsAppShareModal = ({
 
   if (!isOpen) return null;
 
-  // Build the text representation
+  // Build the text representation based on active language
   const generateSummaryText = () => {
-    let text = `📋 *${config.messName || 'Mess Meal Manager'}* - হিসাব বিবরণী\n`;
-    text += `🗓️ *মাস:* ${config.monthYear}\n`;
+    let text = `📋 *${config.messName || 'Mess Meal Manager'}* - ${t.shareSheetTitle}\n`;
+    text += `🗓️ *${t.shareMonth}:* ${config.monthYear}\n`;
     text += `───────────────────────\n`;
-    text += `💰 *মোট জমা:* ${formatCurrency(metrics.totalDeposit)}\n`;
-    text += `🛒 *মোট খরচ:* ${formatCurrency(metrics.totalCost)}\n`;
-    text += `🍽️ *মোট মিল:* ${metrics.totalMeals} টি\n`;
-    text += `⚡ *মিল রেট:* ${formatCurrency(metrics.mealRate)} / মিল\n`;
+    text += `💰 *${t.shareDeposit}:* ${formatCurrency(metrics.totalDeposit)}\n`;
+    text += `🛒 *${t.shareCost}:* ${formatCurrency(metrics.totalCost)}\n`;
+    text += `🍽️ *${t.shareMeals}:* ${metrics.totalMeals} ${t.totalMealsUnit}\n`;
+    text += `⚡ *${t.shareMealRate}:* ${formatCurrency(metrics.mealRate)} ${t.perMeal}\n`;
     if (config.useBazarCost && metrics.leftoverFund !== 0) {
-      text += `💼 *মেস ফান্ড উদ্বৃত্ত:* ${formatCurrency(metrics.leftoverFund)}\n`;
+      text += `💼 *${t.shareLeftover}:* ${formatCurrency(metrics.leftoverFund)}\n`;
     }
     text += `───────────────────────\n`;
-    text += `👥 *সদস্যদের চূড়ান্ত ব্যালান্স:*\n\n`;
+    text += `👥 *${t.shareMembersBalance}*\n\n`;
 
     members.forEach((m, idx) => {
-      const statusIcon = m.status === 'refund' ? '🟢 ফেরত পাবে:' : m.status === 'due' ? '🔴 বকেয়া (দিতে হবে):' : '⚪ পরিশোধিত:';
+      const statusIcon = m.status === 'refund' ? t.shareRefundIcon : m.status === 'due' ? t.shareDueIcon : t.shareSettledIcon;
       const balanceText = m.status === 'due' 
         ? formatCurrency(Math.abs(m.balance)) 
         : formatCurrency(m.balance);
 
       text += `${idx + 1}. *${m.name}*\n`;
-      text += `   • মিল: ${m.totalMeals} টি | জমা: ${formatCurrency(m.depositBalance)}\n`;
-      text += `   • মিল খরচ: ${formatCurrency(m.individualCost)}\n`;
+      text += `   • ${t.colTotalMeals}: ${m.totalMeals} | ${t.shareDeposit}: ${formatCurrency(m.depositBalance)}\n`;
+      text += `   • ${t.colIndividualCost}: ${formatCurrency(m.individualCost)}\n`;
       text += `   • ${statusIcon} ${balanceText}\n\n`;
     });
 
     text += `───────────────────────\n`;
-    text += `Generated with Mess Meal Manager App 🚀`;
+    text += t.shareFooter;
     return text;
   };
 
@@ -100,7 +102,7 @@ const WhatsAppShareModal = ({
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
-          title="বন্ধ করুন (Esc)"
+          title="Esc"
         >
           <X className="w-5 h-5" />
         </button>
@@ -111,8 +113,8 @@ const WhatsAppShareModal = ({
             <MessageCircle className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-white">হোয়াটসঅ্যাপ / মেসেঞ্জার সামারি</h2>
-            <p className="text-xs text-slate-400">মেস গ্রুপে এক ক্লিকে শেয়ার করার উপযোগী ফরম্যাটেড টেক্সট</p>
+            <h2 className="text-base sm:text-lg font-bold text-white">{t.shareModalTitle}</h2>
+            <p className="text-xs text-slate-400">{t.shareModalSub}</p>
           </div>
         </div>
 
@@ -127,7 +129,7 @@ const WhatsAppShareModal = ({
         <div className="mt-4 sm:mt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <span className="text-xs text-slate-400 flex items-center gap-1">
             <Share2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>কপি করে সরাসরি মেসেঞ্জারে পেস্ট করুন</span>
+            <span>{t.shareHelperText}</span>
           </span>
 
           <button
@@ -141,12 +143,12 @@ const WhatsAppShareModal = ({
             {copied ? (
               <>
                 <Check className="w-4 h-4" />
-                <span>কপি হয়েছে!</span>
+                <span>{t.btnCopied}</span>
               </>
             ) : (
               <>
                 <Copy className="w-4 h-4" />
-                <span>কপি করুন (Copy)</span>
+                <span>{t.btnCopy}</span>
               </>
             )}
           </button>

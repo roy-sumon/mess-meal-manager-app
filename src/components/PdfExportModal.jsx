@@ -3,6 +3,7 @@ import { X, Download, FileText, Loader2, Check } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { formatCurrency } from '../utils/calculator';
+import { useLanguage } from '../context/useLanguage';
 
 const PdfExportModal = ({ 
   isOpen, 
@@ -11,6 +12,7 @@ const PdfExportModal = ({
   metrics, 
   members = [] 
 }) => {
+  const { t, language } = useLanguage();
   const [generating, setGenerating] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -72,11 +74,17 @@ const PdfExportModal = ({
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       console.error('Error generating PDF:', err);
-      alert('PDF তৈরিতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।');
+      alert(t.pdfError);
     } finally {
       setGenerating(false);
     }
   };
+
+  const formattedDate = new Date().toLocaleDateString(language === 'bn' ? 'bn-BD' : 'en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
     <div 
@@ -91,7 +99,7 @@ const PdfExportModal = ({
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
-          title="বন্ধ করুন (Esc)"
+          title="Esc"
         >
           <X className="w-5 h-5" />
         </button>
@@ -103,8 +111,8 @@ const PdfExportModal = ({
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-white">প্রফেশনাল PDF রিপোর্ট</h2>
-              <p className="text-xs text-slate-400">মেসের অফিসিয়াল মাসিক স্টেটমেন্ট প্রিভিউ ও ডাউনলোড</p>
+              <h2 className="text-base sm:text-lg font-bold text-white">{t.pdfModalTitle}</h2>
+              <p className="text-xs text-slate-400">{t.pdfModalSub}</p>
             </div>
           </div>
 
@@ -116,17 +124,17 @@ const PdfExportModal = ({
             {generating ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>PDF তৈরি হচ্ছে...</span>
+                <span>{t.btnGeneratingPdf}</span>
               </>
             ) : success ? (
               <>
                 <Check className="w-4 h-4 text-emerald-300" />
-                <span>ডাউনলোড হয়েছে!</span>
+                <span>{t.btnDownloadedPdf}</span>
               </>
             ) : (
               <>
                 <Download className="w-4 h-4" />
-                <span>PDF ডাউনলোড</span>
+                <span>{t.btnDownloadPdf}</span>
               </>
             )}
           </button>
@@ -146,33 +154,33 @@ const PdfExportModal = ({
                 <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
                   {config.messName || 'Mess Meal Manager'}
                 </h1>
-                <p className="text-sm font-medium text-indigo-600 mt-0.5">মাসিক মিল ও খরচ হিসাব বিবরণী</p>
-                <p className="text-xs text-slate-500 mt-1">তারিখ: {new Date().toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                <p className="text-sm font-medium text-indigo-600 mt-0.5">{t.pdfDocTitle}</p>
+                <p className="text-xs text-slate-500 mt-1">{t.pdfDate}: {formattedDate}</p>
               </div>
               <div className="text-right">
                 <span className="inline-block px-3 py-1 bg-slate-100 border border-slate-200 rounded-md text-xs font-bold text-slate-700 uppercase tracking-wider">
                   {config.monthYear}
                 </span>
-                <p className="text-xs text-slate-500 mt-2">মোট সদস্য: {members.length} জন</p>
+                <p className="text-xs text-slate-500 mt-2">{t.pdfTotalMembers(members.length)}</p>
               </div>
             </div>
 
             {/* KPI Summary Strip */}
             <div className="grid grid-cols-4 gap-3 p-3.5 bg-slate-50 border border-slate-200 rounded-lg mb-5 text-center">
               <div>
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">মোট জমা টাকা</span>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">{t.totalDeposit}</span>
                 <span className="text-sm sm:text-base font-bold text-slate-900">{formatCurrency(metrics.totalDeposit)}</span>
               </div>
               <div>
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">মোট মেস খরচ</span>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">{t.totalCost}</span>
                 <span className="text-sm sm:text-base font-bold text-slate-900">{formatCurrency(metrics.totalCost)}</span>
               </div>
               <div>
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">মোট মিল সংখ্যা</span>
-                <span className="text-sm sm:text-base font-bold text-purple-700">{metrics.totalMeals} টি</span>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">{t.totalMeals}</span>
+                <span className="text-sm sm:text-base font-bold text-purple-700">{metrics.totalMeals} {t.totalMealsUnit}</span>
               </div>
               <div>
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">মিল রেট</span>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">{t.mealRate}</span>
                 <span className="text-sm sm:text-base font-bold text-emerald-700">{formatCurrency(metrics.mealRate)}</span>
               </div>
             </div>
@@ -182,12 +190,12 @@ const PdfExportModal = ({
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="bg-slate-100 text-slate-700 border-b border-slate-300 font-bold uppercase text-[10px] tracking-wider">
-                    <th className="py-2.5 px-3 text-center border-r border-slate-200 w-10">নং</th>
-                    <th className="py-2.5 px-3 border-r border-slate-200">সদস্যের নাম</th>
-                    <th className="py-2.5 px-3 text-center border-r border-slate-200">মোট মিল</th>
-                    <th className="py-2.5 px-3 text-right border-r border-slate-200">জমা টাকা (৳)</th>
-                    <th className="py-2.5 px-3 text-right border-r border-slate-200">মিল খরচ (৳)</th>
-                    <th className="py-2.5 px-3 text-right">ব্যালান্স অবস্থা (৳)</th>
+                    <th className="py-2.5 px-3 text-center border-r border-slate-200 w-10">{t.pdfSerial}</th>
+                    <th className="py-2.5 px-3 border-r border-slate-200">{t.colMemberName}</th>
+                    <th className="py-2.5 px-3 text-center border-r border-slate-200">{t.colTotalMeals}</th>
+                    <th className="py-2.5 px-3 text-right border-r border-slate-200">{t.colDeposit}</th>
+                    <th className="py-2.5 px-3 text-right border-r border-slate-200">{t.colIndividualCost}</th>
+                    <th className="py-2.5 px-3 text-right">{t.colStatus}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -200,13 +208,13 @@ const PdfExportModal = ({
                       <td className="py-2 px-3 text-right font-medium border-r border-slate-200 text-slate-700">{formatCurrency(member.individualCost)}</td>
                       <td className="py-2 px-3 text-right font-bold whitespace-nowrap">
                         {member.status === 'refund' && (
-                          <span className="text-emerald-700">+ {formatCurrency(member.balance)} (ফেরত পাবে)</span>
+                          <span className="text-emerald-700">{t.statusRefund(formatCurrency(member.balance))}</span>
                         )}
                         {member.status === 'due' && (
-                          <span className="text-rose-700">- {formatCurrency(Math.abs(member.balance))} (দিতে হবে)</span>
+                          <span className="text-rose-700">{t.statusDue(formatCurrency(Math.abs(member.balance)))}</span>
                         )}
                         {member.status === 'settled' && (
-                          <span className="text-slate-500">০.০০ ৳ (পরিশোধিত)</span>
+                          <span className="text-slate-500">{t.statusSettled}</span>
                         )}
                       </td>
                     </tr>
@@ -214,13 +222,13 @@ const PdfExportModal = ({
                 </tbody>
                 <tfoot className="bg-slate-100 font-bold border-t-2 border-slate-300 text-slate-900">
                   <tr>
-                    <td colSpan={2} className="py-2.5 px-3 text-left border-r border-slate-200">সর্বমোট ({members.length} জন)</td>
+                    <td colSpan={2} className="py-2.5 px-3 text-left border-r border-slate-200">{t.totalSummaryRow(members.length)}</td>
                     <td className="py-2.5 px-3 text-center border-r border-slate-200 text-purple-700">{metrics.totalMeals}</td>
                     <td className="py-2.5 px-3 text-right border-r border-slate-200">{formatCurrency(metrics.totalDeposit)}</td>
                     <td className="py-2.5 px-3 text-right border-r border-slate-200">{formatCurrency(metrics.totalCost)}</td>
                     <td className="py-2.5 px-3 text-right text-[11px] whitespace-nowrap">
-                      <span className="text-emerald-700 mr-2">ফেরত: {formatCurrency(metrics.totalRefunds)}</span>
-                      <span className="text-rose-700">বকেয়া: {formatCurrency(metrics.totalDues)}</span>
+                      <span className="text-emerald-700 mr-2">{t.totalRefunds}: {formatCurrency(metrics.totalRefunds)}</span>
+                      <span className="text-rose-700">{t.totalDues}: {formatCurrency(metrics.totalDues)}</span>
                     </td>
                   </tr>
                 </tfoot>
@@ -230,12 +238,12 @@ const PdfExportModal = ({
             {/* Signature & Note Section */}
             <div className="pt-6 mt-6 border-t border-dashed border-slate-300 flex justify-between items-end text-xs text-slate-500">
               <div>
-                <p className="font-semibold text-slate-700">বিশেষ দ্রষ্টব্য:</p>
-                <p>হিসাবে কোনো গরমিল পরিলক্ষিত হলে অনুগ্রহ করে দ্রুত মেস ম্যানেজারের সাথে যোগাযোগ করুন।</p>
+                <p className="font-semibold text-slate-700">{t.pdfNoteTitle}</p>
+                <p>{t.pdfNoteContent}</p>
               </div>
               <div className="text-center w-48">
                 <div className="border-b border-slate-400 pb-1 mb-1"></div>
-                <p className="font-semibold text-slate-800">মেস ম্যানেজার স্বাক্ষর</p>
+                <p className="font-semibold text-slate-800">{t.pdfManagerSign}</p>
               </div>
             </div>
 

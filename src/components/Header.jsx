@@ -1,4 +1,3 @@
-
 import { 
   UtensilsCrossed, 
   UserPlus, 
@@ -8,6 +7,8 @@ import {
   RotateCcw,
   Sparkles
 } from 'lucide-react';
+import LanguageToggle from './LanguageToggle';
+import { useLanguage } from '../context/useLanguage';
 
 const Header = ({ 
   config, 
@@ -18,6 +19,8 @@ const Header = ({
   onResetData, 
   onLoadDemo 
 }) => {
+  const { t } = useLanguage();
+
   return (
     <header className="relative z-10 border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -38,68 +41,72 @@ const Header = ({
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-400 flex items-center gap-2">
-                <span>স্মার্ট মেস মিল ও হিসাব ব্যবস্থাপনা</span>
+                <span>{t.appSubtitle}</span>
                 <span className="text-slate-600">•</span>
                 <button 
                   onClick={onOpenSettings}
                   className="text-xs text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors"
                 >
-                  মেসের নাম বা মাস পরিবর্তন করুন
+                  {t.editMessInfo}
                 </button>
               </p>
             </div>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons & Language Switcher */}
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            
+            {/* Language Selector */}
+            <LanguageToggle />
+
             {/* Quick Demo button */}
             <button
               onClick={onLoadDemo}
-              title="ডেমো মেম্বার ডাটা লোড করুন"
+              title={t.demoDataTitle}
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 border border-slate-700/60 hover:border-slate-600 transition-all active:scale-95 shadow-sm"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span className="hidden sm:inline">ডেমো ডাটা</span>
+              <span className="hidden sm:inline">{t.demoData}</span>
             </button>
 
             {/* Reset button */}
             <button
               onClick={onResetData}
-              title="সব ডাটা রিসেট করুন"
+              title={t.resetTitle}
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-slate-800/80 hover:bg-rose-950/40 text-slate-400 hover:text-rose-300 border border-slate-700/60 hover:border-rose-900/40 transition-all active:scale-95"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">রিসেট</span>
+              <span className="hidden sm:inline">{t.reset}</span>
             </button>
 
             {/* Settings button */}
             <button
               onClick={onOpenSettings}
-              title="বাজার খরচ ও সেটিংস"
+              title={t.bazarCostTitle}
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 border border-slate-700/60 hover:border-slate-600 transition-all active:scale-95"
             >
               <Settings className="w-3.5 h-3.5 text-indigo-400" />
-              <span>বাজার খরচ</span>
+              <span>{t.bazarCost}</span>
             </button>
 
             {/* WhatsApp Share button */}
             <button
               onClick={onOpenShare}
-              title="মেস গ্রুপে শেয়ার করার টেক্সট কপি করুন"
+              title={t.shareTitle}
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-800/50 transition-all active:scale-95"
             >
               <Share2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>শেয়ার</span>
+              <span>{t.share}</span>
             </button>
 
             {/* PDF Export button */}
             <button
               onClick={onOpenPdf}
-              title="PDF রিপোর্ট ডাউনলোড করুন"
+              title={t.pdfReportTitle}
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/60 hover:border-slate-600 transition-all active:scale-95"
             >
               <Download className="w-3.5 h-3.5 text-blue-400" />
-              <span className="hidden sm:inline">PDF রিপোর্ট</span>
+              <span className="hidden sm:inline">{t.pdfReport}</span>
             </button>
 
             {/* Primary Add Member Button */}
@@ -108,7 +115,7 @@ const Header = ({
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 hover:from-indigo-400 hover:via-purple-400 hover:to-indigo-500 text-white shadow-lg shadow-indigo-500/25 ring-1 ring-white/20 transition-all active:scale-95"
             >
               <UserPlus className="w-4 h-4" />
-              <span>সদস্য যোগ করুন</span>
+              <span>{t.addMember}</span>
             </button>
           </div>
 

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { X, User, Wallet, Utensils, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '../utils/calculator';
+import { useLanguage } from '../context/useLanguage';
 
 const MemberModal = ({ isOpen, onClose, onSave, editingMember, currentMealRate }) => {
+  const { t } = useLanguage();
   const [name, setName] = useState('');
   const [depositBalance, setDepositBalance] = useState('');
   const [totalMeals, setTotalMeals] = useState('');
@@ -41,15 +43,15 @@ const MemberModal = ({ isOpen, onClose, onSave, editingMember, currentMealRate }
     const parsedMeals = parseFloat(totalMeals);
 
     if (!trimmedName) {
-      setError('দয়া করে মেম্বারের নাম লিখুন।');
+      setError(t.errNameRequired);
       return;
     }
     if (isNaN(parsedDeposit) || parsedDeposit < 0) {
-      setError('দয়া করে সঠিক জমা টাকার পরিমাণ দিন (০ বা তার বেশি)।');
+      setError(t.errDepositInvalid);
       return;
     }
     if (isNaN(parsedMeals) || parsedMeals < 0) {
-      setError('দয়া করে মোট মিলের সংখ্যা দিন (০ বা তার বেশি)।');
+      setError(t.errMealsInvalid);
       return;
     }
 
@@ -82,7 +84,7 @@ const MemberModal = ({ isOpen, onClose, onSave, editingMember, currentMealRate }
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
-          title="বন্ধ করুন (Esc)"
+          title="Esc"
         >
           <X className="w-5 h-5" />
         </button>
@@ -94,10 +96,10 @@ const MemberModal = ({ isOpen, onClose, onSave, editingMember, currentMealRate }
           </div>
           <div>
             <h2 className="text-base sm:text-lg font-bold text-white">
-              {editingMember ? 'মেম্বারের তথ্য পরিবর্তন করুন' : 'নতুন মেম্বার যুক্ত করুন'}
+              {editingMember ? t.modalEditTitle : t.modalAddTitle}
             </h2>
             <p className="text-xs text-slate-400">
-              {editingMember ? 'নাম, জমা টাকা বা মিলের সংখ্যা আপডেট করুন' : 'মেম্বারের নাম, জমা টাকা ও মিলের সংখ্যা পূরণ করুন'}
+              {editingMember ? t.modalEditSub : t.modalAddSub}
             </p>
           </div>
         </div>
@@ -116,7 +118,7 @@ const MemberModal = ({ isOpen, onClose, onSave, editingMember, currentMealRate }
           {/* Member Name */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-              মেম্বারের নাম (Name)
+              {t.labelName}
             </label>
             <div className="relative">
               <input
@@ -126,7 +128,7 @@ const MemberModal = ({ isOpen, onClose, onSave, editingMember, currentMealRate }
                   setName(e.target.value);
                   setError('');
                 }}
-                placeholder="যেমন: সুমন রায়"
+                placeholder={t.placeholderName}
                 autoFocus
                 className="w-full rounded-xl bg-slate-800/80 border border-slate-700 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
               />
@@ -136,7 +138,7 @@ const MemberModal = ({ isOpen, onClose, onSave, editingMember, currentMealRate }
           {/* Deposit Balance */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-              জমা টাকা (Deposit Amount - ৳)
+              {t.labelDeposit}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -151,7 +153,7 @@ const MemberModal = ({ isOpen, onClose, onSave, editingMember, currentMealRate }
                   setDepositBalance(e.target.value);
                   setError('');
                 }}
-                placeholder="যেমন: 3500"
+                placeholder={t.placeholderDeposit}
                 className="w-full rounded-xl bg-slate-800/80 border border-slate-700 pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
               />
             </div>
@@ -160,7 +162,7 @@ const MemberModal = ({ isOpen, onClose, onSave, editingMember, currentMealRate }
           {/* Total Meals */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-              মোট মিল (Total Meals)
+              {t.labelMeals}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -175,7 +177,7 @@ const MemberModal = ({ isOpen, onClose, onSave, editingMember, currentMealRate }
                   setTotalMeals(e.target.value);
                   setError('');
                 }}
-                placeholder="যেমন: 45"
+                placeholder={t.placeholderMeals}
                 className="w-full rounded-xl bg-slate-800/80 border border-slate-700 pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
               />
             </div>
@@ -185,13 +187,13 @@ const MemberModal = ({ isOpen, onClose, onSave, editingMember, currentMealRate }
           {currentMealRate > 0 && numMeals > 0 && (
             <div className="p-3 rounded-xl bg-slate-800/50 border border-slate-700/60 text-xs text-slate-300 flex items-center justify-between">
               <div>
-                <span className="text-slate-400">বর্তমান রেটে আনুমানিক খরচ:</span>
+                <span className="text-slate-400">{t.realtimeEstCost}</span>
                 <p className="font-semibold text-white">{formatCurrency(estimatedCost)}</p>
               </div>
               <div className="text-right">
-                <span className="text-slate-400">সম্ভাব্য ব্যালান্স:</span>
+                <span className="text-slate-400">{t.realtimeEstBalance}</span>
                 <p className={`font-bold ${estimatedBalance >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {estimatedBalance >= 0 ? `+${formatCurrency(estimatedBalance)} (ফেরত)` : `${formatCurrency(estimatedBalance)} (বকেয়া)`}
+                  {estimatedBalance >= 0 ? `+${formatCurrency(estimatedBalance)} ${t.refundTag}` : `${formatCurrency(estimatedBalance)} ${t.dueTag}`}
                 </p>
               </div>
             </div>
@@ -204,13 +206,13 @@ const MemberModal = ({ isOpen, onClose, onSave, editingMember, currentMealRate }
               onClick={onClose}
               className="px-4 py-2 text-sm font-medium rounded-xl text-slate-300 hover:bg-slate-800 transition-colors"
             >
-              বাতিল
+              {t.btnCancel}
             </button>
             <button
               type="submit"
               className="px-5 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/25 transition-all active:scale-95"
             >
-              {editingMember ? 'আপডেট করুন' : 'সংরক্ষণ করুন'}
+              {editingMember ? t.btnUpdate : t.btnSave}
             </button>
           </div>
 

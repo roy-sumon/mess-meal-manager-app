@@ -5,11 +5,12 @@ import {
   Trash2, 
   UserCheck, 
   ArrowUpDown, 
-  UserX,
+  UserX, 
   Plus,
   X
 } from 'lucide-react';
 import { formatCurrency } from '../utils/calculator';
+import { useLanguage } from '../context/useLanguage';
 
 const MemberTable = ({ 
   members = [], 
@@ -18,6 +19,7 @@ const MemberTable = ({
   onDeleteMember, 
   onOpenAddMember 
 }) => {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all'); // 'all' | 'refund' | 'due'
   const [sortBy, setSortBy] = useState('name-asc'); // 'name-asc' | 'meals-desc' | 'deposit-desc' | 'balance-desc'
@@ -63,7 +65,7 @@ const MemberTable = ({
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            সবাই ({members.length})
+            {t.allMembers(members.length)}
           </button>
           <button
             onClick={() => setFilterStatus('refund')}
@@ -73,7 +75,7 @@ const MemberTable = ({
                 : 'text-emerald-400 hover:text-emerald-300'
             }`}
           >
-            ফেরত পাবে ({refundCount})
+            {t.refundMembers(refundCount)}
           </button>
           <button
             onClick={() => setFilterStatus('due')}
@@ -83,7 +85,7 @@ const MemberTable = ({
                 : 'text-rose-400 hover:text-rose-300'
             }`}
           >
-            বকেয়া ({dueCount})
+            {t.dueMembers(dueCount)}
           </button>
         </div>
 
@@ -97,7 +99,7 @@ const MemberTable = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="নাম দিয়ে খুঁজুন..."
+              placeholder={t.searchPlaceholder}
               className="w-full pl-9 pr-8 py-1.5 text-xs sm:text-sm bg-slate-950/60 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
             />
             {searchQuery && (
@@ -118,10 +120,10 @@ const MemberTable = ({
               onChange={(e) => setSortBy(e.target.value)}
               className="bg-slate-950/60 border border-slate-800 text-slate-300 text-xs rounded-xl px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer"
             >
-              <option value="name-asc">নাম (A-Z)</option>
-              <option value="meals-desc">মিল (বেশি থেকে কম)</option>
-              <option value="deposit-desc">জমা (বেশি থেকে কম)</option>
-              <option value="balance-desc">ব্যালান্স (বেশি থেকে কম)</option>
+              <option value="name-asc">{t.sortNameAsc}</option>
+              <option value="meals-desc">{t.sortMealsDesc}</option>
+              <option value="deposit-desc">{t.sortDepositDesc}</option>
+              <option value="balance-desc">{t.sortBalanceDesc}</option>
             </select>
           </div>
 
@@ -136,12 +138,10 @@ const MemberTable = ({
             {members.length === 0 ? <UserCheck className="w-8 h-8" /> : <UserX className="w-8 h-8" />}
           </div>
           <h3 className="text-base font-semibold text-slate-200">
-            {members.length === 0 ? 'এখনো কোনো সদস্য যোগ করা হয়নি' : 'কোনো সদস্য খুঁজে পাওয়া যায়নি'}
+            {members.length === 0 ? t.noMembersTitle : t.noMembersFoundTitle}
           </h3>
           <p className="text-xs sm:text-sm text-slate-400 max-w-sm mx-auto mt-1 mb-5">
-            {members.length === 0 
-              ? 'মেসের সদস্যদের নাম, জমা টাকা ও মোট মিল যুক্ত করুন অথবা ডেমো ডাটা দেখতে পারেন।' 
-              : 'অনুগ্রহ করে সার্চ বা ফিল্টারের মান পরিবর্তন করে আবার চেষ্টা করুন।'}
+            {members.length === 0 ? t.noMembersSub : t.noMembersFoundSub}
           </p>
           {members.length === 0 ? (
             <button
@@ -149,7 +149,7 @@ const MemberTable = ({
               className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition-all active:scale-95 shadow-lg shadow-indigo-600/20"
             >
               <Plus className="w-4 h-4" />
-              <span>প্রথম সদস্য যোগ করুন</span>
+              <span>{t.addFirstMember}</span>
             </button>
           ) : (
             <button
@@ -159,7 +159,7 @@ const MemberTable = ({
               }}
               className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all active:scale-95 border border-slate-700"
             >
-              <span>ফিল্টার রিসেট করুন</span>
+              <span>{t.resetFilters}</span>
             </button>
           )}
         </div>
@@ -170,12 +170,12 @@ const MemberTable = ({
             <table className="w-full text-left text-sm">
               <thead className="bg-slate-950/40 text-slate-400 border-b border-slate-800 text-xs uppercase font-semibold tracking-wider">
                 <tr>
-                  <th className="py-3.5 px-5">মেম্বারের নাম</th>
-                  <th className="py-3.5 px-4 text-center">মোট মিল</th>
-                  <th className="py-3.5 px-4 text-right">জমা টাকা (৳)</th>
-                  <th className="py-3.5 px-4 text-right">মিল খরচ (৳)</th>
-                  <th className="py-3.5 px-4 text-center">অবস্থা / ব্যালান্স</th>
-                  <th className="py-3.5 px-5 text-right">অ্যাকশন</th>
+                  <th className="py-3.5 px-5">{t.colMemberName}</th>
+                  <th className="py-3.5 px-4 text-center">{t.colTotalMeals}</th>
+                  <th className="py-3.5 px-4 text-right">{t.colDeposit}</th>
+                  <th className="py-3.5 px-4 text-right">{t.colIndividualCost}</th>
+                  <th className="py-3.5 px-4 text-center">{t.colStatus}</th>
+                  <th className="py-3.5 px-5 text-right">{t.colActions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
@@ -187,6 +187,8 @@ const MemberTable = ({
                     .slice(0, 2)
                     .join('')
                     .toUpperCase();
+
+                  const ratePerMeal = member.totalMeals > 0 ? (member.individualCost / member.totalMeals).toFixed(1) : 0;
 
                   return (
                     <tr 
@@ -204,7 +206,7 @@ const MemberTable = ({
                               {member.name}
                             </span>
                             <span className="text-xs text-slate-500">
-                              গড়ে {member.totalMeals > 0 ? (member.individualCost / member.totalMeals).toFixed(1) : 0} ৳ / মিল
+                              {t.avgPerMealLabel(ratePerMeal)}
                             </span>
                           </div>
                         </div>
@@ -231,17 +233,17 @@ const MemberTable = ({
                       <td className="py-3 px-4 text-center whitespace-nowrap">
                         {member.status === 'refund' && (
                           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-400 border border-emerald-800/60">
-                            + {formatCurrency(member.balance)} (ফেরত পাবে)
+                            {t.statusRefund(formatCurrency(member.balance))}
                           </span>
                         )}
                         {member.status === 'due' && (
                           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-rose-950/60 text-rose-400 border border-rose-800/60">
-                            - {formatCurrency(Math.abs(member.balance))} (দিতে হবে)
+                            {t.statusDue(formatCurrency(Math.abs(member.balance)))}
                           </span>
                         )}
                         {member.status === 'settled' && (
                           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700">
-                            ০.০০ ৳ (পরিশোধিত)
+                            {t.statusSettled}
                           </span>
                         )}
                       </td>
@@ -251,14 +253,14 @@ const MemberTable = ({
                         <div className="flex items-center justify-end gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => onEditMember(member)}
-                            title="এডিট করুন"
+                            title={t.editTooltip}
                             className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-300 hover:bg-indigo-950/40 transition-colors"
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => onDeleteMember(member.id, member.name)}
-                            title="মুছে ফেলুন"
+                            title={t.deleteTooltip}
                             className="p-1.5 rounded-lg text-slate-400 hover:text-rose-300 hover:bg-rose-950/40 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -273,9 +275,9 @@ const MemberTable = ({
               {/* Table Footer with Summary */}
               <tfoot className="bg-slate-950/60 font-semibold text-slate-200 border-t-2 border-slate-800 text-xs sm:text-sm">
                 <tr>
-                  <td className="py-3.5 px-5">সর্বমোট ({filteredMembers.length} জন)</td>
+                  <td className="py-3.5 px-5">{t.totalSummaryRow(filteredMembers.length)}</td>
                   <td className="py-3.5 px-4 text-center text-purple-400">
-                    {Math.round(filteredMembers.reduce((sum, m) => sum + m.totalMeals, 0) * 100) / 100} টি
+                    {Math.round(filteredMembers.reduce((sum, m) => sum + m.totalMeals, 0) * 100) / 100} {t.totalMealsUnit}
                   </td>
                   <td className="py-3.5 px-4 text-right text-indigo-400 whitespace-nowrap">
                     {formatCurrency(filteredMembers.reduce((sum, m) => sum + m.depositBalance, 0))}
@@ -284,8 +286,8 @@ const MemberTable = ({
                     {formatCurrency(filteredMembers.reduce((sum, m) => sum + m.individualCost, 0))}
                   </td>
                   <td className="py-3.5 px-4 text-center text-xs whitespace-nowrap">
-                    <span className="text-emerald-400 mr-2">মোট ফেরত: {formatCurrency(metrics.totalRefunds)}</span>
-                    <span className="text-rose-400">মোট বকেয়া: {formatCurrency(metrics.totalDues)}</span>
+                    <span className="text-emerald-400 mr-2">{t.totalRefunds}: {formatCurrency(metrics.totalRefunds)}</span>
+                    <span className="text-rose-400">{t.totalDues}: {formatCurrency(metrics.totalDues)}</span>
                   </td>
                   <td className="py-3.5 px-5 text-right text-slate-500">—</td>
                 </tr>
@@ -308,20 +310,20 @@ const MemberTable = ({
                     </div>
                     <div className="min-w-0">
                       <h4 className="font-semibold text-white text-sm truncate" title={member.name}>{member.name}</h4>
-                      <p className="text-xs text-slate-400">{member.totalMeals} টি মিল</p>
+                      <p className="text-xs text-slate-400">{member.totalMeals} {t.totalMealsUnit}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <button
                       onClick={() => onEditMember(member)}
-                      title="এডিট"
+                      title={t.editTooltip}
                       className="p-2 rounded-lg text-slate-400 hover:text-indigo-300 bg-slate-800/90 active:scale-95 transition-all"
                     >
                       <Edit3 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => onDeleteMember(member.id, member.name)}
-                      title="মুছুন"
+                      title={t.deleteTooltip}
                       className="p-2 rounded-lg text-slate-400 hover:text-rose-300 bg-slate-800/90 active:scale-95 transition-all"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -332,32 +334,32 @@ const MemberTable = ({
                 {/* Grid details */}
                 <div className="grid grid-cols-2 gap-2 text-xs bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
                   <div>
-                    <span className="text-slate-500 block">জমা টাকা:</span>
+                    <span className="text-slate-500 block">{t.colDeposit}:</span>
                     <span className="font-medium text-slate-200">{formatCurrency(member.depositBalance)}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block">মিল খরচ:</span>
+                    <span className="text-slate-500 block">{t.colIndividualCost}:</span>
                     <span className="font-medium text-slate-200">{formatCurrency(member.individualCost)}</span>
                   </div>
                 </div>
 
                 {/* Status Badge */}
                 <div className="pt-1 flex items-center justify-between gap-2">
-                  <span className="text-xs text-slate-400 flex-shrink-0">ব্যালান্স:</span>
+                  <span className="text-xs text-slate-400 flex-shrink-0">{t.netBalanceStatus}:</span>
                   <div className="text-right">
                     {member.status === 'refund' && (
                       <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-400 border border-emerald-800/60">
-                        + {formatCurrency(member.balance)} (ফেরত)
+                        {t.statusRefund(formatCurrency(member.balance))}
                       </span>
                     )}
                     {member.status === 'due' && (
                       <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-950/60 text-rose-400 border border-rose-800/60">
-                        - {formatCurrency(Math.abs(member.balance))} (বকেয়া)
+                        {t.statusDue(formatCurrency(Math.abs(member.balance)))}
                       </span>
                     )}
                     {member.status === 'settled' && (
                       <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700">
-                        ০.০০ ৳ (পরিশোধিত)
+                        {t.statusSettled}
                       </span>
                     )}
                   </div>
