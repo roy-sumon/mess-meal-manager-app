@@ -301,3 +301,4 @@ export const translations = {
     footerCraftedWith: 'Crafted with',
   },
 };
+
